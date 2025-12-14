@@ -21,10 +21,50 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// CORS configuration - allow frontend URL and common Vercel patterns
+const allowedOrigins = [
+  config.frontendUrl,
+  // Allow Vercel preview deployments
+  ...(config.frontendUrl.includes("vercel.app")
+    ? [
+        config.frontendUrl.replace(
+          /^https:\/\/([^.]+)\.vercel\.app/,
+          "https://$1.vercel.app"
+        ),
+        /^https:\/\/.*\.vercel\.app$/,
+      ]
+    : []),
+];
+
 app.use(
   cors({
-    origin: config.frontendUrl,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      // Check if origin matches allowed origins
+      const isAllowed = allowedOrigins.some((allowed) => {
+        if (typeof allowed === "string") {
+          return origin === allowed;
+        }
+        if (allowed instanceof RegExp) {
+          return allowed.test(origin);
+        }
+        return false;
+      });
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        // Log for debugging
+        logger.warn(`CORS blocked origin: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
