@@ -184,7 +184,7 @@ ${createTableSQL}
     logger.info(completionMessage);
   }
 
-  private async loadMigrations(): Promise<Migration[]> {
+  async loadMigrations(): Promise<Migration[]> {
     const migrations: Migration[] = [];
     const modulesPath = join(__dirname, "../../modules");
 
@@ -281,7 +281,7 @@ ${createTableSQL}
     return new Date(2024, 0, 1, 0, 0, order); // Fake timestamp for ordering
   }
 
-  private async getExecutedMigrations(): Promise<string[]> {
+  async getExecutedMigrations(): Promise<string[]> {
     const { data, error } = await supabase
       .from(this.migrationsTable)
       .select("id");
@@ -440,6 +440,40 @@ ${createTableSQL}
     }
 
     console.log(`\nTotal: ${modules.length} modules\n`);
+  }
+
+  // Public method to get migration status data (for API endpoints)
+  async getMigrationStatus(moduleFilter?: string): Promise<{
+    total: number;
+    executed: number;
+    pending: number;
+    pendingMigrations: Array<{ id: string; name: string; module: string }>;
+  }> {
+    const migrations = await this.loadMigrations();
+    const executedMigrations = await this.getExecutedMigrations();
+
+    let filteredMigrations = migrations;
+
+    if (moduleFilter) {
+      filteredMigrations = migrations.filter((m) => m.module === moduleFilter);
+    }
+
+    const pendingMigrations = filteredMigrations.filter(
+      (m) => !executedMigrations.includes(m.id)
+    );
+
+    return {
+      total: filteredMigrations.length,
+      executed: executedMigrations.filter((id) =>
+        filteredMigrations.some((m) => m.id === id)
+      ).length,
+      pending: pendingMigrations.length,
+      pendingMigrations: pendingMigrations.map((m) => ({
+        id: m.id,
+        name: m.name,
+        module: m.module,
+      })),
+    };
   }
 
   async status(moduleFilter?: string): Promise<void> {
