@@ -1,5 +1,4 @@
-// Register path aliases for runtime (must be first)
-import "tsconfig-paths/register";
+// Path aliases are registered via -r flag in package.json start script
 
 import express from "express";
 import cors from "cors";

@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "prebuild": "npm install --include=dev",
     "build": "tsc",
-    "start": "node -r tsconfig-paths/register dist/index.js",
+    "start": "node -r ./tsconfig-paths-bootstrap.js dist/index.js",
     "type-check": "tsc --noEmit",
     "migrate": "tsx src/scripts/migrate.ts",
     "migrate:up": "tsx src/scripts/migrate.ts up",
