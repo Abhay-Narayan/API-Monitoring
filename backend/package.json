@@ -7,7 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "prebuild": "npm install --include=dev",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node -r tsconfig-paths/register dist/index.js",
     "type-check": "tsc --noEmit",
     "migrate": "tsx src/scripts/migrate.ts",
     "migrate:up": "tsx src/scripts/migrate.ts up",
@@ -27,7 +27,8 @@
     "axios": "^1.6.2",
     "nodemailer": "^6.9.7",
     "@supabase/supabase-js": "^2.38.5",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
