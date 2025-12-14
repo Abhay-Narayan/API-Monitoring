@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/modules/auth/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,13 @@ export default function CreateMonitorPage() {
   // Mutations
   const { mutateAsync: createMonitor, isLoading: creating } =
     useCreateMonitor();
+
+  // Redirect if not authenticated (only on client side)
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push("/auth/login");
+    }
+  }, [isAuthenticated, authLoading, router]);
 
   const handleInputChange = (field: keyof CreateMonitorRequest, value: any) => {
     setFormData((prev) => ({
@@ -139,8 +146,8 @@ export default function CreateMonitorPage() {
     );
   }
 
-  if (!isAuthenticated) {
-    router.push("/auth/login");
+  // Don't render if not authenticated (redirect handled in useEffect)
+  if (!authLoading && !isAuthenticated) {
     return null;
   }
 
