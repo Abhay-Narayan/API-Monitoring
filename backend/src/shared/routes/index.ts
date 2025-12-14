@@ -3,6 +3,7 @@ import { authRoutes } from "@/modules/auth/routes";
 import { monitoringRoutes } from "@/modules/monitoring/routes";
 import { alertRoutes } from "@/modules/alerts/routes";
 import { dashboardRoutes } from "./dashboardRoutes";
+import { migrationRoutes } from "./migrationRoutes";
 import { notFoundHandler } from "@/shared/middleware/errorHandler";
 
 export function setupRoutes(app: Application): void {
@@ -11,6 +12,7 @@ export function setupRoutes(app: Application): void {
   app.use("/api/monitors", monitoringRoutes);
   app.use("/api/alerts", alertRoutes);
   app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/migrations", migrationRoutes);
 
   // Health and status routes
   app.get("/api/status", (req, res) => {
